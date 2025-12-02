@@ -31,8 +31,7 @@ class User extends Authenticatable
         'is_admin',
         'otp_code',
         'otp_expires_at',
-        'parent_name',
-        'parent_number',
+        'date_of_birth',
     ];
 
     /**

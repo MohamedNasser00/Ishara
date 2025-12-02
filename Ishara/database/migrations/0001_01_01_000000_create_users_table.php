@@ -22,8 +22,6 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->boolean('is_verified')->default(false);
             $table->boolean('is_admin')->default(false);
-            $table->string('parent_name');
-            $table->string('parent_number');
             $table->string('password');
             $table->string('otp_code')->nullable();
             $table->timestamp('otp_expires_at')->nullable();

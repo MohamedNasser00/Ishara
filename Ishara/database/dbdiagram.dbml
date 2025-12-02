@@ -1,0 +1,197 @@
+// Ishara Application - Database Schema for dbdiagram.io
+// Copy this entire file content and paste it in https://dbdiagram.io
+
+Project Ishara {
+  database_type: 'PostgreSQL'
+  Note: 'Ishara Sign Language Learning Application Database Schema'
+}
+
+// ============================================
+// USERS TABLE
+// ============================================
+Table users {
+  id bigint [pk, increment]
+  first_name varchar(255)
+  last_name varchar(255)
+  email varchar(255) [unique]
+  password varchar(255)
+  phone varchar(255) [unique]
+  gender enum('male', 'female')
+  date_of_birth date
+  email_verified_at timestamp
+  is_verified boolean [default: false]
+  is_admin boolean [default: false]
+  otp_code varchar(255)
+  otp_expires_at timestamp
+  remember_token varchar(100)
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+  
+  Note: 'Users table with authentication and profile information'
+}
+
+// ============================================
+// OTP CODES TABLE
+// ============================================
+Table otp_codes {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  email varchar(255)
+  otp_code varchar(6)
+  type enum('verification', 'password_reset')
+  is_used boolean [default: false]
+  expires_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  
+  indexes {
+    (email, otp_code)
+    expires_at
+  }
+  
+  Note: 'OTP codes for email verification and password reset'
+}
+
+// ============================================
+// LEVELS TABLE
+// ============================================
+Table levels {
+  id bigint [pk, increment]
+  level_number integer [unique]
+  name varchar(255)
+  letters_covered varchar(255)
+  description text
+  order integer
+  created_at timestamp
+  updated_at timestamp
+  
+  indexes {
+    order
+  }
+  
+  Note: 'Learning levels (Level 1, 2, 3, 4)'
+}
+
+// ============================================
+// LETTERS TABLE
+// ============================================
+Table letters {
+  id bigint [pk, increment]
+  level_id bigint [ref: > levels.id]
+  letter varchar(1)
+  name varchar(255)
+  key_steps json
+  common_mistakes json
+  order_in_level integer
+  created_at timestamp
+  updated_at timestamp
+  
+  indexes {
+    (level_id, letter) [unique]
+    (level_id, order_in_level)
+  }
+  
+  Note: 'Letters/signs in each level for Learn and Practice modules'
+}
+
+// ============================================
+// WORDS TABLE
+// ============================================
+Table words {
+  id bigint [pk, increment]
+  level_id bigint [ref: > levels.id]
+  word varchar(255)
+  description text
+  order_in_level integer
+  created_at timestamp
+  updated_at timestamp
+  
+  indexes {
+    (level_id, word) [unique]
+    (level_id, order_in_level)
+  }
+  
+  Note: 'Words for Test Module'
+}
+
+// ============================================
+// USER LEARN PROGRESS TABLE
+// ============================================
+Table user_learn_progress {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  letter_id bigint [ref: > letters.id]
+  is_completed boolean [default: false]
+  completed_at timestamp
+  last_accessed_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  
+  indexes {
+    (user_id, letter_id) [unique]
+    (user_id, is_completed)
+  }
+  
+  Note: 'User progress tracking for Learn Module'
+}
+
+// ============================================
+// USER PRACTICE PROGRESS TABLE
+// ============================================
+Table user_practice_progress {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  letter_id bigint [ref: > letters.id]
+  is_completed boolean [default: false]
+  accuracy decimal(5,2)
+  attempts_count integer [default: 0]
+  completed_at timestamp
+  last_practiced_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  
+  indexes {
+    (user_id, letter_id) [unique]
+    (user_id, is_completed)
+  }
+  
+  Note: 'User progress tracking for Practice Module with accuracy and attempts'
+}
+
+// ============================================
+// USER TEST PROGRESS TABLE
+// ============================================
+Table user_test_progress {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  word_id bigint [ref: > words.id]
+  is_completed boolean [default: false]
+  accuracy decimal(5,2)
+  attempts_count integer [default: 0]
+  completed_at timestamp
+  last_attempted_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  
+  indexes {
+    (user_id, word_id) [unique]
+    (user_id, is_completed)
+  }
+  
+  Note: 'User progress tracking for Test Module with accuracy and attempts'
+}
+
+// ============================================
+// RELATIONSHIPS SUMMARY
+// ============================================
+// Users (1) → (N) OTP Codes
+// Users (1) → (N) Learn Progress
+// Users (1) → (N) Practice Progress
+// Users (1) → (N) Test Progress
+// Levels (1) → (N) Letters
+// Levels (1) → (N) Words
+// Letters (1) → (N) Learn Progress
+// Letters (1) → (N) Practice Progress
+// Words (1) → (N) Test Progress
+
