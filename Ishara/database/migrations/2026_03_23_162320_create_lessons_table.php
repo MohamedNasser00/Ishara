@@ -11,17 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('words', function (Blueprint $table) {
+        Schema::create('lessons', function (Blueprint $table) {
             $table->id();
             $table->foreignId('level_id')->constrained('levels')->onDelete('cascade');
-            $table->string('word');
-            $table->text('description')->nullable();
-            $table->integer('order_in_level');
+            $table->string('letter');
+            $table->integer('order')->default(0);
             $table->timestamps();
-
-            // Indexes
-            $table->unique(['level_id', 'word']);
-            $table->index(['level_id', 'order_in_level']);
         });
     }
 
@@ -30,7 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('words');
+        Schema::dropIfExists('lessons');
     }
 };
-

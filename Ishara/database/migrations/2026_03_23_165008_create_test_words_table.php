@@ -11,19 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('letters', function (Blueprint $table) {
+        Schema::create('test_words', function (Blueprint $table) {
             $table->id();
             $table->foreignId('level_id')->constrained('levels')->onDelete('cascade');
-            $table->string('letter', 1);
-            $table->string('name');
-            $table->json('key_steps')->nullable();
-            $table->json('common_mistakes')->nullable();
-            $table->integer('order_in_level');
+            $table->string('word');
+            $table->integer('order')->default(0);
             $table->timestamps();
-
-            // Indexes
-            $table->unique(['level_id', 'letter']);
-            $table->index(['level_id', 'order_in_level']);
         });
     }
 
@@ -32,7 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('letters');
+        Schema::dropIfExists('test_words');
     }
 };
-

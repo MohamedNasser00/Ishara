@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->date('date_of_birth')->nullable()->after('gender');
+        Schema::create('levels', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->integer('order')->default(0);
+            $table->timestamps();
         });
     }
 
@@ -21,9 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('date_of_birth');
-        });
+        Schema::dropIfExists('levels');
     }
 };
-

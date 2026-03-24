@@ -23,7 +23,6 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'gender',
-        'phone',
         'email',
         'password',
         'email_verified_at',
@@ -65,5 +64,19 @@ class User extends Authenticatable
     public function depositPayments()
     {
         return $this->hasMany(Payment::class)->where('payment_type', 'deposit');
+    }
+    public function userLessons()
+    {
+        return $this->hasMany(UserLesson::class, 'user_id');
+    }
+
+    public function userPracticeProgress()
+    {
+        return $this->hasMany(UserPracticeProgress::class, 'user_id');
+    }
+
+    public function userTestProgress()
+    {
+        return $this->hasMany(UserTestProgress::class, 'user_id');
     }
 }
