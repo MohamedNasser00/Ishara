@@ -13,7 +13,7 @@ class TestSeeder extends Seeder
     public function run(): void
     {
         $levelsData = [
-            'Level One' => ['able', 'love', 'buy', 'cube', 'wavy', 'bowl', 'claw', 'you', 'clay', 'clue'],
+            'Level One' => ['apple', 'love', 'buy', 'cube', 'wavy', 'bowl', 'claw', 'you', 'clay', 'clue'],
             'Level Two' => ['risk', 'sir', 'dirt', 'kids', 'verb', 'dark', 'four', 'draw', 'feud', 'cake'],
             'Level Three' => ['foxy', 'onyx', 'gown', 'honk', 'minx', 'hack', 'claw', 'hawk', 'numb'],
             'Level Four' => ['quiz', 'mazy', 'jive', 'vape', 'jump', 'squiz', 'equip', 'czar', 'pivot'],
