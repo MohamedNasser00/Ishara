@@ -1,61 +1,153 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🤟 Ishara – AI Sign Language Learning App Backend API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ishara Backend API is the engine powering the Ishara mobile application. It manages user authentication, records learning progress, logs practice sessions, tracks test evaluations, and provides structured educational resources (levels, lessons, and test words).
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📖 Overview
+The backend application provides a secure RESTful API that handles:
+* 🔐 **User Authentication & Email OTP verification**
+* 📈 **Real-Time Progress Synchronization** (Lessons, Practice sessions, and Tests)
+* 👤 **Account & Profile Management**
+* 📊 **Structured Curriculum Data** (Levels, Alphabet Lessons, Practice Exercises, and Test Words)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## ✨ Key Features
+* 🔐 **Token-Based Authentication:** Secured using Laravel Sanctum for mobile clients.
+* ✉️ **OTP Verification:** Verification code generation and email handling for account activation and password recovery.
+* 📈 **Progress Tracker:** Database models tracking completed lessons, practice runs, and tests per user.
+* 🔄 **Progress Reset:** Ability for users to wipe all of their progress (Learn, Practice, and Test) and start fresh.
+* 📂 **Seeded Curriculum Dataset:** Automated seeders that populate learning levels (A-Z alphabets) and corresponding test words.
+* 🛠 **Standardized Response API:** Unified JSON responses (`success`, `message`, `data`, and `errors`) handled through a responses helper.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠 Tech Stack
+* **Backend Framework:** Laravel 12.x
+* **Language:** PHP 8.2+
+* **Package Manager:** Composer
+* **Database:** SQLite (default / zero-config), MySQL / PostgreSQL compatible
+* **Authentication:** Laravel Sanctum
+* **Mail / OTP:** Local Log Mailer / SMTP
+* **Testing:** PHPUnit / Laravel Test suite
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🧩 Architecture
+The backend is structured using a clean Service-Layer pattern to isolate business logic from HTTP controllers.
 
-## Laravel Sponsors
+```text
+app/
+ ├── Http/
+ │   ├── Controllers/
+ │   │   └── Website/
+ │   │       ├── Account/       # Profile management & progress deletion
+ │   │       ├── Auth/          # Login, Register, OTP verify, Forgot password
+ │   │       └── Learn/         # Levels, Lessons, Practice & Test completion
+ │   └── Requests/
+ │       └── Website/Auth/      # Input validation logic
+ │
+ ├── Models/                    # Eloquent ORM Models
+ │   ├── User.php
+ │   ├── Level.php
+ │   ├── Lesson.php
+ │   ├── UserLesson.php
+ │   ├── UserPracticeProgress.php
+ │   ├── TestWord.php
+ │   └── UserTestProgress.php
+ │
+ ├── Services/                  # Core Business Logic Layer
+ │   ├── Website/
+ │   │   ├── Account/
+ │   │   ├── Auth/
+ │   │   └── Learn/
+ │   └── HandleResponse.php     # Standardized JSON response helper
+ │
+ └── routes/
+     └── api.php                # API route definitions
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## ⚡ API Endpoints
+All API responses follow a uniform structure:
+* **Success (200/201):** `{"success": true, "message": "...", "data": {...}}`
+* **Failure (422/400/401):** `{"success": false, "message": "...", "errors": [...]}`
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Auth Endpoints (Public)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/register` | Register a new user account (generates & mails activation OTP) |
+| `POST` | `/api/verify` | Verify email OTP code to activate the account |
+| `POST` | `/api/resend-otp` | Resend verification OTP code to the registered email |
+| `POST` | `/api/login` | Log in and receive a Sanctum Bearer token |
+| `POST` | `/api/forgot-password/send` | Request a password reset OTP code |
+| `POST` | `/api/forgot-password/verify` | Verify password reset OTP code |
+| `POST` | `/api/forgot-password/reset` | Reset account password using the verified reset OTP |
 
-## Contributing
+### Account Endpoints (Protected - Bearer Token Required)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/profile` | Retrieve user profile details and current progress summaries |
+| `POST` | `/api/profile/update-name` | Update user first name and last name |
+| `DELETE` | `/api/profile/clear-progress` | Reset and clear all learning, practice, and test progress data |
+| `POST` | `/api/logout` | Revoke active Sanctum token and log out |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Learn & Practice Modules (Protected - Bearer Token Required)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/learn/levels` | Fetch all learning levels, lessons, and completion status |
+| `POST` | `/api/learn/lessons/{id}/complete` | Mark a specific alphabet lesson as completed |
+| `GET` | `/api/practice/levels` | Fetch all practice levels and complete status |
+| `POST` | `/api/practice/lessons/{id}/complete` | Mark a specific practice lesson as completed |
 
-## Code of Conduct
+### Test Module (Protected - Bearer Token Required)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/test/levels` | Fetch test levels containing words for evaluation |
+| `POST` | `/api/test/words/{id}/complete` | Mark a specific word sign-test as completed |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## ⚙️ Installation & Running Locally
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 1. Clone & Navigate
+Clone the repository and go to the backend project root:
+```bash
+cd ishara/Ishara
+```
 
-## License
+### 2. Automatic Application Setup
+Execute the composer setup command which installs packages, configures files, generates keys, and executes database migrations:
+```bash
+composer run setup
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 3. Seed Database Content
+Populate the lessons database (letters A-Z) and testing words:
+```bash
+php artisan db:seed --class=LearnSeeder
+php artisan db:seed --class=TestSeeder
+```
+
+### 4. Run Development Server
+Run the unified developer environment containing servers, background queues, logs, and Vite asset builders:
+```bash
+composer run dev
+```
+*API is accessible locally at `http://127.0.0.1:8000`*
+
+### 5. Running Tests
+Verify application integrity using PHPUnit:
+```bash
+composer run test
+```
+
+---
+
+## 🚀 Future Improvements
+* 🏆 **Gamified Progress API:** Endpoint routes for logging user XP points, levels, and daily streaks.
+* 🤖 **AI Integration Endpoint:** Offload custom gesture frame processing to a dedicated Flask/FastAPI worker.
+* 📊 **Advanced Learning Reports:** Custom reports endpoint summarizing performance and completion stats over time.
+* 🖥️ **Admin Control Panel:** Panel view for administrators to manage lessons, words, and student records.
